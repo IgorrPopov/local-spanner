@@ -4,7 +4,7 @@ This project helps you to run GCP Spanner for local development purposes.
 
 This is Spanner emulator, and it's not intended for production.
 
-If you use **Node.js** you run these scripts from the package.json file (or you can just run **docker-compose** commands directly)
+If you use **Node.js** you can run these scripts from the package.json file (or you can just run **docker-compose** commands directly)
 
 ```
   "scripts": {
@@ -15,7 +15,7 @@ If you use **Node.js** you run these scripts from the package.json file (or you 
   }
 ```
 
-Put your valid DML and DDL scripts into corresponding directories in the migration directory.
+Put your valid DML and DDL scripts into corresponding directories in the **/migrations** directory.
 
 **IMPORTANT!** Before using please visit these links in order to have overall info about Spanner emulator (how it works, and what restrictions it has)
 
