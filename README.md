@@ -15,7 +15,7 @@ If you use **Node.js** you can run these scripts from the package.json file (or 
   }
 ```
 
-####Environment variables
+**Environment variables**
 
 ```bash
     PROJECT_ID=test-project-id
