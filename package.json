@@ -1,0 +1,13 @@
+{
+  "name": "local-spanner",
+  "version": "1.0.0",
+  "description": "Local GCP Spanner",
+  "scripts": {
+    "spanner:up": "docker-compose -f ./spanner.docker-compose.yaml up --build spanner gcloud",
+    "spanner:down": "docker-compose -f ./spanner.docker-compose.yaml down --remove-orphans",
+    "spanner:cli": "docker-compose -f ./spanner.docker-compose.yaml up -d spanner-cli && docker attach spanner-cli",
+    "spanner:cli:stop": "docker-compose -f ./spanner.docker-compose.yaml stop spanner-cli"
+  },
+  "author": "Igor Popov",
+  "license": "ISC"
+}

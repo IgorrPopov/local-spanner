@@ -1,0 +1,62 @@
+# GCP documentation https://cloud.google.com/spanner/docs/emulator
+# read a README file of the https://github.com/GoogleCloudPlatform/cloud-spanner-emulator
+# repo in order to understand all of the Features and Limitations of the emulator
+
+version: '3.8'
+
+services:
+    spanner:
+     image: gcr.io/cloud-spanner-emulator/emulator:latest
+     container_name: spanner
+     ports:
+         - '9010:9010'
+         - '9020:9020'
+
+    gcloud:
+      image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+      container_name: gcloud
+      env_file:
+        - ./.env
+      environment:
+        SPANNER_EMULATOR_URL: 'http://spanner:9020/'
+
+      depends_on:
+        - 'spanner'
+
+      volumes:
+        - ./migrations/ddl:/migrations/ddl
+        - ./migrations/dml:/migrations/dml
+
+      command: >
+       bash -c 'gcloud config configurations create emulator &&
+               gcloud config set auth/disable_credentials true &&
+               gcloud config set project $${PROJECT_ID} &&
+               gcloud config set api_endpoint_overrides/spanner $${SPANNER_EMULATOR_URL} &&
+               gcloud config set auth/disable_credentials true &&
+               gcloud spanner instances create $${INSTANCE_NAME} --config=emulator-config --description=Emulator --nodes=1 &&
+               gcloud spanner databases create $${DATABASE_NAME} --instance=$${INSTANCE_NAME} &&
+
+               for DDL_FILE_NAME_PATH in /migrations/ddl/*.sql;
+               do
+                  gcloud spanner databases ddl update $${DATABASE_NAME} --ddl-file="$${DDL_FILE_NAME_PATH}" --instance=$${INSTANCE_NAME};
+               done;
+
+               for DML_FILE_NAME_PATH in /migrations/dml/*.sql;
+               do
+                  DML_QUERY=`cat "$${DML_FILE_NAME_PATH}"`;
+                  gcloud spanner databases execute-sql $${DATABASE_NAME} --sql="$${DML_QUERY}" --instance=$${INSTANCE_NAME};
+               done;'
+
+    # the spanner-cli service connects directly to the database and exposes the cli
+    # you can execute SQL command from your loca machine's terminal
+    spanner-cli:
+      image: sjdaws/spanner-cli:latest
+      container_name: spanner-cli
+      stdin_open: true
+      tty: true
+      env_file:
+        - ./.env
+      environment:
+        SPANNER_EMULATOR_HOST: 'spanner:9010'
+      command: >
+        bash -c 'spanner-cli -p $${PROJECT_ID} -i $${INSTANCE_NAME} -d $${DATABASE_NAME}'

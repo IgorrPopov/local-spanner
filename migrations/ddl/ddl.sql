@@ -1,0 +1,6 @@
+CREATE TABLE bands (
+  bandId STRING(36) NOT NULL,
+  name STRING(500) NOT NULL,
+  logoUrl STRING(500) NOT NULL,
+  formationYear INT64 NOT NULL,
+) PRIMARY KEY(bandId);
